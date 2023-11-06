@@ -7,10 +7,26 @@ const productosController = {
         const { productoCodigo , productoNombre, productoValorNeto, productoValorVenta } = req.body;
         
         
-        const response = await client.query( controllers.insertNewProducto , [productoCodigo.toUpperCase() , productoNombre.toUpperCase() , parseFloat(productoValorNeto).toFixed(2), parseFloat(productoValorVenta).toFixed(2)] );
+        const { rowCount } = await client.query( controllers.insertNewProducto , [productoCodigo.toUpperCase() , productoNombre.toUpperCase() , parseFloat(productoValorNeto).toFixed(2), parseFloat(productoValorVenta).toFixed(2)] );
 
-        console.log(response);
-        res.json({ message: "User created successfully", product: req.body }).status(201);
+        if(rowCount > 0){
+            res.json(
+                {
+                    variant: 'success', 
+                    message: "User created successfully", 
+                    created: true,
+                    show: true
+                }).status(201);
+        } else{
+            res.json(
+                { 
+                    variant: 'danger',
+                    message: "The request is incorrect", 
+                    created: false,
+                    show: true
+                 }).status(400);
+        }
+        
     }
 }
 
