@@ -10,10 +10,12 @@ const app = express();
 
 // middlewares
 app.use(logger("dev"));
-app.use(cors());
+
 
 //configuraciones para recibir JSON
 app.use(express.json());
+
+app.use(cors());
 
 // routes
 app.use("/", router )

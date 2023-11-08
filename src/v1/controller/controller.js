@@ -2,7 +2,7 @@ import client from "../config/conection.database.js";
 import controllers from "../model/model.js";
 
 
-const productosController = {
+export const productosController = {
     insertarNuevoProducto: async (req,res)=>{
         const { productoCodigo , productoNombre, productoValorNeto, productoValorVenta } = req.body;
         
@@ -27,7 +27,16 @@ const productosController = {
                  }).status(400);
         }
         
+    },
+    getAllData: async(req,res)=>{
+        try {
+            const response = await client.query('SELECT * FROM productos');
+            res.json(response.rows);
+        } catch (error) {
+            console.log(error);
+            res.json({message: "The request is incorrect"});
+        }
+        
+        
     }
 }
-
-export default productosController;
