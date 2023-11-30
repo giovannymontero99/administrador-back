@@ -29,21 +29,24 @@ router.post('/login', async(req,res)=>{
     const token = jsonwebtoken.sign( req.body, secret  );
     const { userLoginForm, passwordLoginForm } = req.body;
 
-    const { password } = await usersCollection.findOne({
+    const mongoUser = await usersCollection.findOne({
         user : userLoginForm
     });
 
-    const isRealPassword = await bcryptjs.compare( passwordLoginForm, password  );
-
-    if(isRealPassword) {
-        res.cookie( 'key', token, {
-            httpOnly: true,
-            sameSite: true,
-            secure: true
-        } )
-        res.send({ msg: 'OK' });
+    if( mongoUser === null ){
+        res.status(401).json({ message: 'this user doesn`t exist' });
     }else {
-        res.send({ msg: 'NOT AUTHORIZED' });
+        const isRealPassword = await bcryptjs.compare( passwordLoginForm, mongoUser.password  );
+        if(isRealPassword) {
+            res.cookie( 'key', token, {
+                httpOnly: true,
+                sameSite: true,
+                secure: true
+            } )
+            res.status(202).json({ isAuthorized: true })
+        }else {
+            res.status(401).json({ isAuthorized: false });
+        }
     }
 })
 
